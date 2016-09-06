@@ -18,7 +18,7 @@ cmd:text('train DeepMask or SharpMask')
 cmd:text()
 cmd:text('Options:')
 cmd:option('-rundir', 'exps/', 'experiments directory')
-cmd:option('-datadir', 'data/', 'data directory')
+cmd:option('-datadir', 'data', 'data directory')
 cmd:option('-seed', 1, 'manually set RNG seed')
 cmd:option('-gpu', 1, 'gpu device')
 cmd:option('-nthreads', 2, 'number of threads for DataSampler')
@@ -99,6 +99,7 @@ local criterion = nn.SoftMarginCriterion():cuda()
 -- initialize data loader
 local DataLoader = paths.dofile('DataLoader.lua')
 local trainLoader, valLoader = DataLoader.create(config)
+print('checkpoint after dataloader')
 
 --------------------------------------------------------------------------------
 -- initialize Trainer (handles training/testing loop)
@@ -108,7 +109,7 @@ else
   paths.dofile('TrainerDeepMask.lua')
 end
 local trainer = Trainer(model, criterion, config)
-
+print('checkpoint after Trainer')
 --------------------------------------------------------------------------------
 -- do it
 epoch = epoch or 1
