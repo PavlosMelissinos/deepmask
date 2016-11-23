@@ -20,8 +20,8 @@ function DataSampler:__init(config,split)
   assert(split == 'train' or split == 'val')
 
   -- coco api
-  local annFile = string.format('%s/annotations/instances_%s2014.json',
-  config.datadir,split)
+  local annFile = string.format('%s/annotations/instances_%s.json',
+  config.datadir, split)
   self.coco = coco.CocoApi(annFile)
 
   -- mask api
@@ -129,7 +129,7 @@ end
 function DataSampler:maskSampling()
   local iSz,wSz,gSz = self.iSz,self.wSz,self.gSz
 
-  local cat,ann = torch.random(80)
+  local cat,ann = torch.random(20)
   while not ann or ann.iscrowd == 1 or ann.area < 100 or ann.bbox[3] < 5
     or ann.bbox[4] < 5 do
       local catId = self.catIds[cat]
@@ -138,10 +138,9 @@ function DataSampler:maskSampling()
       ann = self.coco:loadAnns(annid)[1]
   end
   local bbox = self:jitterBox(ann.bbox)
-  local imgName = self.coco:loadImgs(ann.image_id)[1].file_name
 
   -- input
-  local pathImg = string.format('%s/%s2014/%s',self.datadir,self.split,imgName)
+  local pathImg = self.coco:loadImgs(ann.image_id)[1].coco_url
   local inp = image.load(pathImg,3)
   local h, w = inp:size(2), inp:size(3)
   inp = self:cropTensor(inp, bbox, 0.5)
@@ -153,6 +152,8 @@ function DataSampler:maskSampling()
   local bboxInpSz = {xc-iSzR/2,yc-iSzR/2,iSzR,iSzR}
   local lbl = self:cropMask(ann, bboxInpSz, h, w, gSz)
   lbl:mul(2):add(-1)
+
+
 
   return inp, lbl
 end
@@ -168,8 +169,7 @@ function DataSampler:scoreSampling(cat,imgId)
   until #bb.scales ~= 0
 
   local imgId = self.imgIds[idx]
-  local imgName = self.coco:loadImgs(imgId)[1].file_name
-  local pathImg = string.format('%s/%s2014/%s',self.datadir,self.split,imgName)
+  local pathImg = self.coco:loadImgs(imgId)[1].coco_url
   local img = image.load(pathImg,3)
   local h,w = img:size(2),img:size(3)
 
