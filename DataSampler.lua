@@ -129,7 +129,7 @@ end
 function DataSampler:maskSampling()
   local iSz,wSz,gSz = self.iSz,self.wSz,self.gSz
 
-  local cat,ann = torch.random(20)
+  local cat,ann = torch.random(3)
   while not ann or ann.iscrowd == 1 or ann.area < 100 or ann.bbox[3] < 5
     or ann.bbox[4] < 5 do
       local catId = self.catIds[cat]
