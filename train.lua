@@ -76,14 +76,16 @@ if #config.reload > 0 then
   end
   print(string.format('| reloading experiment %s', config.reload))
   local m = torch.load(string.format('%s/model.t7', config.reload))
-  model, config = m.model, m.config
+  model = m.model
+  -- config = m.config
 end
 
 --------------------------------------------------------------------------------
 -- directory to save log and model
 local pathsv = trainSm and 'sharpmask/exp' or 'deepmask/exp'
 config.rundir = cmd:string(
-  paths.concat(config.reload=='' and config.rundir or config.reload, pathsv),
+--   paths.concat(config.reload=='' and config.rundir or config.reload, pathsv),
+  paths.concat(config.rundir, pathsv),
   config,{rundir=true, gpu=true, reload=true, datadir=true, dm=true} --ignore
 )
 
@@ -110,6 +112,7 @@ else
 end
 local trainer = Trainer(model, criterion, config)
 print('checkpoint after Trainer')
+
 --------------------------------------------------------------------------------
 -- do it
 epoch = epoch or 1
