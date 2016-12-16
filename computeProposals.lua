@@ -87,7 +87,7 @@ local masks,_ = infer:getTopProps(.2,h,w)
 -- save result
 local res = img:clone()
 maskApi.drawMasks(res, masks, 10)
-image.save(string.format('./'..config.limg,config.model),res)
+image.save(string.format(config.limg, config.model), res)
 
 print('| done')
 collectgarbage()
